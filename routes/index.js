@@ -49,8 +49,12 @@ router.get('/main', (req, res) => {
     const hmac = crypto.createHmac('sha256', credentials.client_secret);    
     const signed = hmac.update(Buffer.from(querystring.stringify(authdata), 'utf-8')).digest('base64');
 
-    console.log('node hmac', signed);    
-    console.log('querystring', query['hmac']);
+    if (query['hmac'] !== signed) {
+        res.send('Invalid hmac');
+        return false;
+    }
+
+    res.send('app check');
 })
 
 module.exports = router
