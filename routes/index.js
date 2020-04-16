@@ -25,7 +25,7 @@ router.get('/main', (req, res, next) => {
         mall_id: params['mall_id'],
         redirect_url: currentUrl
     };
-    reqData['state'] = Buffer.from(querystring.stringify(stateData), 'utf-8').toString('base64');
+    reqData['state'] = libApps.encodeStateData(stateData);
     
     const redirectUrl = `https://${params['mall_id']}.cafe24api.com/api/v2/oauth/authorize?${querystring.stringify(reqData)}`;
     
@@ -36,7 +36,11 @@ router.get('/main', (req, res, next) => {
 });
 
 router.get('/authcode', (req, res, next) => {
-    console.log(req.query);
+    const params = req.query;
+    const libApps = new LibApps(params);
+    
+    libApps.requestAccessToken();
+    res.send('authcode');
 });
 
 module.exports = router;
