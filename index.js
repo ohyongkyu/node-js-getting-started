@@ -4,7 +4,7 @@ const app = express()
 const PORT = process.env.PORT || 5000
 const router = require('./routes/index')
 
-console.log(process.env.NODE_ENV);
+process.env.NODE_ENV = ( process.env.NODE_ENV && ( process.env.NODE_ENV ).trim().toLowerCase() == 'production' ) ? 'production' : 'development';
 
 app.use('/', router)
 app.use(express.static(path.join(__dirname, 'public')))
