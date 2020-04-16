@@ -21,7 +21,11 @@ router.get('/main', (req, res, next) => {
 
     const currentUrl = `${req.protocol}://${req.headers.host}${req.originalUrl}`;    
     const reqData = libApps.getReqData();
-    reqData['state'] = Buffer.from(currentUrl, 'utf-8').toString('base64');    
+    const stateData = {
+        mall_id: params['mall_id'],
+        redirect_url: currentUrl
+    };
+    reqData['state'] = Buffer.from(querystring.stringify(stateData), 'utf-8').toString('base64');
     
     const redirectUrl = `https://${params['mall_id']}.cafe24api.com/api/v2/oauth/authorize?${querystring.stringify(reqData)}`;
     
