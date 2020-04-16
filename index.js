@@ -4,6 +4,8 @@ const app = express()
 const PORT = process.env.PORT || 5000
 const router = require('./routes/index')
 
+console.log(process.env.NODE_ENV);
+
 app.use('/', router)
 app.use(express.static(path.join(__dirname, 'public')))
 app.set('views', path.join(__dirname, 'views'))
