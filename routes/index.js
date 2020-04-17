@@ -12,6 +12,6 @@ router.get('/', (req, res) => {
 router.get('/admin', adminController);
 router.get('/main', mainController);
 router.get('/authcode', authcodeController);
-router.get('/webhook', webhookController);
+router.post('/webhook', webhookController);
 
 module.exports = router;
