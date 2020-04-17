@@ -20,10 +20,10 @@ const authcodeController = (req, res, next) => {
     const state = querystring.parse(Buffer.from(params['state'], 'base64').toString('utf-8'));
     params = Object.assign(params, state);    
 
-    const result = libOAuth.refreshAccessToken(params['mall_id'], params['code']);
-    console.log(result);
+    const response = libOAuth.requestAccessToken(params['mall_id'], params['code']);
+    console.log(response);
 
-    res.send('test');
+    res.send(querystring.stringify(response.data));
 };
 
 module.exports = authcodeController;
