@@ -9,7 +9,7 @@ const schema = Joi.object().keys({
     state: Joi.string().required()
 });
 
-const authcodeController = (req, res, next) => {
+const authcodeController = async (req, res, next) => {
     let params = req.query;    
     const validateResult = Joi.validate(params, schema);
 
@@ -21,7 +21,7 @@ const authcodeController = (req, res, next) => {
     const state = querystring.parse(Buffer.from(params['state'], 'base64').toString('utf-8'));
     params = Object.assign(params, state);    
 
-    const response = libOAuth.requestAccessToken(params['mall_id'], params['code']);
+    const response = await libOAuth.requestAccessToken(params['mall_id'], params['code']);
     console.log(response);
 
     res.send(querystring.stringify(response.data));
