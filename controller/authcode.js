@@ -6,7 +6,7 @@ const libOAuth = require('../lib/libOAuth');
 
 const schema = Joi.object().keys({
     code: Joi.string().alphanum().required(),
-    state: Joi.string().alphanum().required()
+    state: Joi.string().required()
 });
 
 const authcodeController = (req, res, next) => {
@@ -14,6 +14,7 @@ const authcodeController = (req, res, next) => {
     const validateResult = Joi.validate(params, schema);
 
     if (validateResult.error != null) {
+        console.error(validateResult.error);
         res.send('Missing required value');
         return;
     }
