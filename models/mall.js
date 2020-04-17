@@ -1,3 +1,4 @@
+const db = require('../db');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 mongoose.set('useCreateIndex', true);
@@ -19,5 +20,4 @@ const mallSchema = new Schema({
         type: Date
     }
 });
-
-module.exports = mongoose.model('mall', mallSchema);
+module.exports = mongoose.model('mall', mallSchema); 

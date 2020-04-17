@@ -1,11 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const LibApps = require('../lib/libApps');
+const adminController = require('../controller/admin');
+const mainController = require('../controller/main');
+const authcodeController = require('../controller/authcode');
 
 router.get('/', (req, res) => {
     res.render('pages/index')
 });
 
+router.get('/admin', adminController);
+router.get('/main', mainController);
+router.get('/authcode', authcodeController);
+
+/*
 router.get('/main', (req, res, next) => {
     const querystring = require('querystring');
     const params = req.query;
@@ -35,6 +43,7 @@ router.get('/main', (req, res, next) => {
     res.send('app admin');
 });
 
+
 router.get('/authcode', (req, res, next) => {
     const params = req.query;
     const libApps = new LibApps(params);
@@ -42,5 +51,5 @@ router.get('/authcode', (req, res, next) => {
     libApps.requestAccessToken();
     res.send('authcode');
 });
-
+*/
 module.exports = router;

@@ -1,8 +1,8 @@
-const express = require('express')
-const path = require('path')
-const app = express()
-const PORT = process.env.PORT || 5000
-const router = require('./routes/index')
+const express = require('express');
+const path = require('path');
+const app = express();
+const PORT = process.env.PORT || 5000;
+const router = require('./routes/index');
 
 process.env.NODE_ENV = ( process.env.NODE_ENV && ( process.env.NODE_ENV ).trim().toLowerCase() == 'production' ) ? 'production' : 'development';
 
