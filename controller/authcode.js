@@ -24,6 +24,20 @@ const authcodeController = async (req, res, next) => {
     const response = await libOAuth.requestAccessToken(params['mall_id'], params['code']);
     console.log(response);
 
+ /*
+data: {
+    access_token: 'YNHaGGoIEN1soZYgiQxUoB',
+    expires_at: '2020-04-18T01:27:09.000',
+    refresh_token: 'jxGVDFvLPRNrUNU8u8H1mC',
+    refresh_token_expires_at: '2020-05-01T23:27:09.000',
+    client_id: 'OYx2To5RLFjlbPhmHtQMPA',
+    mall_id: 'corona19',
+    user_id: 'corona19',
+    scopes: [ 'mall.read_application', 'mall.write_application' ],
+    issued_at: '2020-04-17T23:27:09.000'
+}
+*/
+
     res.send(querystring.stringify(response.data));
 };
 
