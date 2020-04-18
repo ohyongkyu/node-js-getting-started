@@ -7,6 +7,8 @@ const PORT = process.env.PORT || 5000;
 
 process.env.NODE_ENV = ( process.env.NODE_ENV && ( process.env.NODE_ENV ).trim().toLowerCase() == 'production' ) ? 'production' : 'development';
 
+
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false}));
 app.use('/', router)
