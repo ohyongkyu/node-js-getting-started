@@ -3,6 +3,7 @@ const axios = require('axios');
 const querystring = require('querystring');
 const { credentials, permissions } = require('../define/appInfo');
 const libOAuth = require('../lib/libOAuth');
+const Token = require('../models/token');
 
 const schema = Joi.object().keys({
     code: Joi.string().alphanum().required(),
@@ -28,7 +29,7 @@ const authcodeController = async (req, res, next) => {
     const result = await new Token(response.data).save();
 
     console.log(result);
-    
+
     res.send(querystring.stringify(response.data));
 };
 
