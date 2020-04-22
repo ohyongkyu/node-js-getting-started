@@ -7,7 +7,8 @@ const { credentials, permissions } = require('../define/appInfo');
 
 const MallController = {
     isValidHmac: (params) => {        
-        let authdata = params;
+        // Spread
+        let authdata = { ...params };
         delete authdata['hmac'];
 
         console.log('authdata', authdata);
@@ -26,8 +27,7 @@ const MallController = {
         const crypto = require('crypto');
         const hmac = crypto.createHmac('sha256', credentials['client_secret']);    
         const signed = hmac.update(Buffer.from(querystring.stringify(authdata), 'utf-8')).digest('base64');
-
-        console.log(params);
+        
         console.log(params['hmac']);
     
         return (params['hmac'] === signed);
