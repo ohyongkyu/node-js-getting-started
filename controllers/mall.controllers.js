@@ -36,7 +36,7 @@ const MallController = {
 
     isInstalled: async (mallId) => {
         try {
-            const mallInfo = await Mall.findOne({mall_id: mallId, status: 'using'}).exec();
+            const mallInfo = await Mall.findOne({mall_id: mallId}).exec();
 
             if (mallInfo === null) {
                 return false;
@@ -89,26 +89,21 @@ const MallController = {
         const isInstalled = await MallController.isInstalled(mallId);
         const isValidAccessToken = await MallController.isValidAccessToken(mallId);
 
-        if (isInstalled === false || isValidAccessToken === false) {            
+        if (isInstalled === false || isValidAccessToken === false) {
             const currentUrl = `${req.protocol}://${req.headers.host}${req.originalUrl}`;
-            const stateData = {
-                mall_id: mallId,
-                country_code: countryCode,
-                redirect_url: currentUrl
-            }    
             const reqData = querystring.stringify({
                 response_type: 'code',
                 client_id: credentials['client_id'],
                 redirect_uri: 'https://sweetnight.herokuapp.com/authcode',
                 scope: permissions.join(','),
-                state: Buffer.from(querystring.stringify(stateData), 'utf-8').toString('base64')
+                state: Buffer.from(querystring.stringify(params), 'utf-8').toString('base64')
             });
             const url = `https://${mallId}.cafe24api.com/api/v2/oauth/authorize?${reqData}`;
 
             res.redirect(url);
         }        
 
-        res.send('ㅁㅁㅁ');    
+        res.render('./pages/main.ejs');
     },
 
     authcode: async(req, res, next) => {
@@ -129,27 +124,33 @@ const MallController = {
         const state = querystring.parse(Buffer.from(params['state'], 'base64').toString('utf-8'));
         params = Object.assign(params, state);
 
-        console.log(params);
-
         const response = await libOAuth.requestAccessToken(params['mall_id'], params['code']);
         const filter = {mall_id: params['mall_id']};
         const accessToken = response.data;
 
         try {
+            if (MallController.isInstalled(params['mall_id']) === false) {
+                await new Mall({
+                    mall_id: params['mall_id'],
+                    country_code: params['country_code'],
+                    status: 'using'
+                }).save();
+            } else {
+                // App 정보 갱신
+                await Mall.updateOne(
+                    filter, 
+                    {country_code: params['country_code'], status: 'using', updated_at: Date.now()}
+                );
+            }
+
             // 토큰 갱신
-            await Token.findOneAndUpdate(
+            await Token.update(
                 filter,
                 accessToken,
                 {new: true, upsert: true}
             );
 
-            // App 정보 갱신
-            await Mall.findOneAndUpdate(
-                filter, 
-                {country_code: params['country_code'], status: 'using', created_at: Date.now(), updated_at: Date.now()}, 
-                {new: true, upsert: true}
-            );
-            res.redirect(params['redirect_url']);
+            res.render('./pages/main');
         } catch (error) {
             res.send(error);
         }
