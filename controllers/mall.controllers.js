@@ -112,7 +112,7 @@ const MallController = {
 
         if (params.hasOwnProperty('error') === true) {
             res.send(params.error);
-            return false;
+            return;
         }
 
         const validateResult = Joi.validate(params, validateSchema.authcode);
@@ -125,11 +125,15 @@ const MallController = {
         const state = querystring.parse(Buffer.from(params['state'], 'base64').toString('utf-8'));
         params = Object.assign(params, state);
 
+        console.log('params : ', params);
+
         const response = await libOAuth.requestAccessToken(params['mall_id'], params['code']);
         const filter = {mall_id: params['mall_id']};
         const accessToken = response.data;
 
         try {
+            console.log(params['mall_id']);
+
             if (MallController.isInstalled(params['mall_id']) === false) {
                 await new Mall({
                     mall_id: params['mall_id'],
