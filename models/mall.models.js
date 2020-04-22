@@ -20,4 +20,4 @@ const mallSchema = new Schema({
         type: Date
     }
 });
-module.exports = mongoose.model('mall', mallSchema); 
+module.exports = mongoose.model('Mall', mallSchema); 

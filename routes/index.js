@@ -1,17 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const adminController = require('../controller/admin');
-const mainController = require('../controller/main');
-const authcodeController = require('../controller/authcode');
-const webhookController = require('../controller/webhook');
+
+const mallController = require('../controllers/mall.controllers');
 
 router.get('/', (req, res) => {
     res.render('pages/index')
 });
 
-router.get('/admin', adminController);
-router.get('/main', mainController);
-router.get('/authcode', authcodeController);
-router.post('/webhook', webhookController);
+router.get('/admin', mallController.admin);
+router.get('/main', mallController.main);
+router.get('/authcode', mallController.authcode);
+router.post('/webhook', mallController.webhook);
 
 module.exports = router;

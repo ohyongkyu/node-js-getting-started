@@ -22,4 +22,4 @@ const tokenSchema = new Schema({
     scopes: Array,
     issued_at: Date
 });
-module.exports = mongoose.model('token', tokenSchema); 
+module.exports = mongoose.model('Token', tokenSchema); 

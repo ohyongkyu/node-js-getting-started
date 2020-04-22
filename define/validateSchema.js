@@ -1,9 +1,7 @@
 const Joi = require('joi');
-const modelMall = require('../models/mall');
-const querystring = require('querystring');
-const { credentials, permissions } = require('../define/appInfo');
 
-const schema = Joi.object().keys({
+const validateSchema = {};
+validateSchema.main = Joi.object().keys({
     mall_id: Joi.string().alphanum().min(4).max(16).required(),
     user_id: Joi.string().alphanum().min(4).max(20).required(),
     user_name: Joi.string().min(4).max(20).required(),
@@ -17,11 +15,9 @@ const schema = Joi.object().keys({
     auth_config: Joi.string().optional()
 });
 
-const isValidHmac = () => {
-};
+validateSchema.authcode = Joi.object().keys({
+    code: Joi.string().alphanum().required(),
+    state: Joi.string().required()
+});
 
-const mainController = async (req, res, next) => {
-
-};
-
-module.exports = mainController;
+module.exports = validateSchema;
