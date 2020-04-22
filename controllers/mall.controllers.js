@@ -166,7 +166,7 @@ const MallController = {
         const params = req.body;
         const validateResult = await Joi.validate(params, validateSchema.webhook);
 
-        console.log(validateResult);
+        console.log('validateResult : ', validateResult);
         res.send('webhook');
     }
 }
