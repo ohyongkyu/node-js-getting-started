@@ -130,21 +130,21 @@ const MallController = {
         params = Object.assign(params, state);
 
         const response = await libOAuth.requestAccessToken(params['mall_id'], params['code']);        
+        
+        const filter = {mall_id: params['mall_id']};
         const accessToken = response.data;
-
-        console.log(accessToken);
 
         try {
             // 토큰 갱신
             await Token.findOneAndUpdate(
-                {mall_id: params['mall_id']},
-                {accessToken},
+                filter,
+                accessToken,
                 {new: true, upsert: true}
             );
 
             // App 정보 갱신
             await Mall.findOneAndUpdate(
-                {mall_id: params['mall_id']}, 
+                filter, 
                 {country_code: params['country_code'], status: 'using', created_at: Date.now(), updated_at: Date.now()}, 
                 {new: true, upsert: true}
             );
