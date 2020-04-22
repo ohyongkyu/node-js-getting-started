@@ -52,6 +52,10 @@ const MallController = {
         try {
             const accessToken = await Token.findOne({mall_id: mallId}).exec();
 
+            if (accessToken === null) {
+                return false;
+            }
+
             const currentDate = new Date();
             if (currentDate > accessToken['refresh_token_expires_at']) {
                 return false;
