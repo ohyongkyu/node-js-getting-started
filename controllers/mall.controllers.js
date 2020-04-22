@@ -11,9 +11,6 @@ const MallController = {
         // Spread
         let authdata = { ...params };
         delete authdata['hmac'];
-
-        console.log('authdata', authdata);
-        console.log('params', params);
     
         if (params.hasOwnProperty('is_multi_shop') === true) {
             authdata['is_multi_shop'] = params['is_multi_shop'];
@@ -28,9 +25,7 @@ const MallController = {
         const crypto = require('crypto');
         const hmac = crypto.createHmac('sha256', credentials['client_secret']);    
         const signed = hmac.update(Buffer.from(querystring.stringify(authdata), 'utf-8')).digest('base64');
-        
-        console.log(params['hmac']);
-    
+            
         return (params['hmac'] === signed);
     },
 
@@ -104,7 +99,7 @@ const MallController = {
             return;
         }
 
-        res.render('pages/main');
+        res.render('pages/main', params);
     },
 
     authcode: async(req, res, next) => {
@@ -124,8 +119,6 @@ const MallController = {
         }
         const state = querystring.parse(Buffer.from(params['state'], 'base64').toString('utf-8'));
         params = Object.assign(params, state);
-
-        console.log('params : ', params);
 
         const response = await libOAuth.requestAccessToken(params['mall_id'], params['code']);
         const filter = {mall_id: params['mall_id']};
@@ -159,7 +152,7 @@ const MallController = {
                 {new: true, upsert: true}
             );
 
-            res.render('pages/main');
+            res.render('pages/main', params);
         } catch (error) {
             res.send(error);
         }
@@ -170,7 +163,10 @@ const MallController = {
     },
 
     webhook: (req, res, next) => {
+        console.log('query', req.query);
+        console.log('body', req.body);
 
+        res.send('webhook');
     }
 }
 
