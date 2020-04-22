@@ -81,7 +81,10 @@ const MallController = {
             }
         }
 
-        if (MallController.isInstalled(mallId) === false || MallController.isValidAccessToken(mallId) === false) {            
+        const isInstalled = await MallController.isInstalled(mallId);
+        const isValidAccessToken = await MallController.isValidAccessToken(mallId);
+
+        if (isInstalled === false || isValidAccessToken === false) {            
             const currentUrl = `${req.protocol}://${req.headers.host}${req.originalUrl}`;
             const stateData = {
                 mall_id: mallId,
