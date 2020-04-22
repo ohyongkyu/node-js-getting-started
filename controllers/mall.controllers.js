@@ -129,8 +129,9 @@ const MallController = {
         const state = querystring.parse(Buffer.from(params['state'], 'base64').toString('utf-8'));
         params = Object.assign(params, state);
 
-        const response = await libOAuth.requestAccessToken(params['mall_id'], params['code']);        
-        
+        console.log(params);
+
+        const response = await libOAuth.requestAccessToken(params['mall_id'], params['code']);
         const filter = {mall_id: params['mall_id']};
         const accessToken = response.data;
 
@@ -148,7 +149,7 @@ const MallController = {
                 {country_code: params['country_code'], status: 'using', created_at: Date.now(), updated_at: Date.now()}, 
                 {new: true, upsert: true}
             );
-            res.redirect(params.redirect_url);
+            res.redirect(params['redirect_url']);
         } catch (error) {
             res.send(error);
         }
