@@ -124,6 +124,7 @@ const MallController = {
         const state = querystring.parse(Buffer.from(params['state'], 'base64').toString('utf-8'));
         params = Object.assign(params, state);
 
+
         const response = await libOAuth.requestAccessToken(params['mall_id'], params['code']);
         const filter = {mall_id: params['mall_id']};
         const accessToken = response.data;
@@ -144,7 +145,7 @@ const MallController = {
             }
 
             // 토큰 갱신
-            await Token.update(
+            await Token.findOneAndUpdate(
                 filter,
                 accessToken,
                 {new: true, upsert: true}
