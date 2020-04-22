@@ -101,7 +101,8 @@ const MallController = {
             const url = `https://${mallId}.cafe24api.com/api/v2/oauth/authorize?${reqData}`;
 
             res.redirect(url);
-        }        
+            return;
+        }
 
         res.render('pages/main');
     },
@@ -148,7 +149,6 @@ const MallController = {
                     }
                 );
             }
-
             // 토큰 갱신
             await Token.findOneAndUpdate(
                 filter,
