@@ -132,9 +132,8 @@ const MallController = {
         const accessToken = response.data;
 
         try {
-            console.log(params['mall_id']);
-
-            if (MallController.isInstalled(params['mall_id']) === false) {
+            const isInstalled = await MallController.isInstalled(params['mall_id']);
+            if (isInstalled === false) {
                 await new Mall({
                     mall_id: params['mall_id'],
                     country_code: params['country_code'],
