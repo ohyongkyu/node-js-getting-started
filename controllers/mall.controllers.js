@@ -10,12 +10,12 @@ const MallController = {
         let authdata = params;        
         delete authdata['hmac'];
     
-        if (query.hasOwnProperty('is_multi_shop') === true) {
-            authdata['is_multi_shop'] = query['is_multi_shop'];
+        if (params.hasOwnProperty('is_multi_shop') === true) {
+            authdata['is_multi_shop'] = params['is_multi_shop'];
         }
     
-        if (['A', 'S'].includes(query.user_type) === true) {
-            authdata['auth_config'] = query['auth_config'];
+        if (['A', 'S'].includes(params.user_type) === true) {
+            authdata['auth_config'] = params['auth_config'];
         }
         // sort
         authdata = Object.fromEntries(Object.entries(authdata).sort());
