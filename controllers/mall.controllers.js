@@ -129,10 +129,12 @@ const MallController = {
         const state = querystring.parse(Buffer.from(params['state'], 'base64').toString('utf-8'));
         params = Object.assign(params, state);
 
-        try {
-            const response = await libOAuth.requestAccessToken(params['mall_id'], params['code']);        
-            const accessToken = response.data;
+        const response = await libOAuth.requestAccessToken(params['mall_id'], params['code']);        
+        const accessToken = response.data;
 
+        console.log(accessToken);
+
+        try {
             // 토큰 갱신
             await Token.findOneAndUpdate(
                 {mall_id: params['mall_id']},
