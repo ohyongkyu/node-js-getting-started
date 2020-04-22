@@ -125,30 +125,27 @@ const MallController = {
         const state = querystring.parse(Buffer.from(params['state'], 'base64').toString('utf-8'));
         params = Object.assign(params, state);
 
-        let doc = await Mall.findOneAndUpdate(
-            {
-                mall_id: params['mall_id']
-            },
-            {
-                country_code: params['country_code'],                
-                status: 'using',
-                created_at: Date.now()
-            }, {
-                new: true,
-                upsert: true
-            }
-        );
-        console.log(doc);
+        const response = await libOAuth.requestAccessToken(params['mall_id'], params['code']);        
+        const accessToken = response.data;
 
-        const response = await libOAuth.requestAccessToken(params['mall_id'], params['code']);
-    
-        //console.log(response);
-    
-        //const result = await new Token(response.data).save();
-    
-        //console.log(result);
-    
-        res.send(querystring.stringify(response.data));
+        try {
+            // 토큰 갱신
+            await Token.findOneAndUpdate(
+                {mall_id: params['mall_id']},
+                {accessToken},
+                {new: true, upsert: true}
+            );
+
+            // App 정보 갱신
+            await Mall.findOneAndUpdate(
+                {mall_id: params['mall_id']}, 
+                {country_code: params['country_code'], status: 'using', created_at: Date.now(), updated_at: Date.now()}, 
+                {new: true, upsert: true}
+            );
+            res.redirect(params.redirect_url);
+        } catch (error) {
+            res.send(error);
+        }
     },
 
     admin: (req, res, next) => {
