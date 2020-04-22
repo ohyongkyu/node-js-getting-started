@@ -24,7 +24,10 @@ const validateSchema = {
         id: Joi.string().required(),
         resource_type: Joi.string().valid('APP').required(),
         event_type: Joi.string().valid("MALL.APP.DELETED", "MALL.APP.EXPIRED").required(),
-        resource: Joi.object().required(),
+        resource: Joi.object().keys({
+            client_id: Joi.string().required(),
+            mall_id: Joi.string().required()
+        }),
         version: Joi.string().required(),
         issue_datetime: Joi.date().required()
     }

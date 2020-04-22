@@ -69,7 +69,7 @@ const MallController = {
         const countryCode = params['nation'];
     
         if (process.env.NODE_ENV === 'production') {
-            const validateResult = Joi.validate(params, validateSchema.main);
+            const validateResult = await Joi.validate(params, validateSchema.main);
     
             if (validateResult.error != null) {
                 res.send('Missing required value');
@@ -110,7 +110,7 @@ const MallController = {
             return;
         }
 
-        const validateResult = Joi.validate(params, validateSchema.authcode);
+        const validateResult = await Joi.validate(params, validateSchema.authcode);
     
         if (validateResult.error != null) {
             console.error(validateResult.error);
@@ -163,11 +163,23 @@ const MallController = {
     },
 
     webhook: async (req, res, next) => {
-        const params = req.body;
-        const validateResult = await Joi.validate(params, validateSchema.webhook);
+        const payload = req.body;
+        const validateResult = await Joi.validate(payload, validateSchema.webhook);
 
-        console.log('validateResult : ', validateResult);
-        res.send('webhook');
+        if (validateResult.error != null) {
+            console.error(validateResult.error);
+            res.send('Missing required value');
+            return;
+        }
+
+        try {
+            const filter = {mall_id: payload['resource']['mall_id']};
+            await Mall.deleteOne(filter);
+            await Token.deleteOne(filter);
+            res.status(200);
+        } catch (error) {            
+            res.status(500);
+        }
     }
 }
 
