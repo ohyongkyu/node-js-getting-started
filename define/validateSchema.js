@@ -30,7 +30,7 @@ const validateSchema = {
             event_datetime: Joi.date().optional()
         }),
         version: Joi.string().required(),
-        issue_datetime: Joi.date().required()
+        issue_datetime: Joi.date().allow('').required()
     }
 };
 
