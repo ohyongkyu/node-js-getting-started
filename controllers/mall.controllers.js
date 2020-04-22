@@ -103,7 +103,7 @@ const MallController = {
             res.redirect(url);
         }        
 
-        res.render('./pages/main.ejs');
+        res.render('pages/main');
     },
 
     authcode: async(req, res, next) => {
@@ -124,7 +124,6 @@ const MallController = {
         const state = querystring.parse(Buffer.from(params['state'], 'base64').toString('utf-8'));
         params = Object.assign(params, state);
 
-
         const response = await libOAuth.requestAccessToken(params['mall_id'], params['code']);
         const filter = {mall_id: params['mall_id']};
         const accessToken = response.data;
@@ -139,8 +138,14 @@ const MallController = {
             } else {
                 // App 정보 갱신
                 await Mall.updateOne(
-                    filter, 
-                    {country_code: params['country_code'], status: 'using', updated_at: Date.now()}
+                    {
+                        mall_id: params['mall_id']
+                    }, 
+                    {
+                        country_code: params['country_code'], 
+                        status: 'using', 
+                        updated_at: Date.now()
+                    }
                 );
             }
 
@@ -151,7 +156,7 @@ const MallController = {
                 {new: true, upsert: true}
             );
 
-            res.render('./pages/main');
+            res.render('pages/main');
         } catch (error) {
             res.send(error);
         }
