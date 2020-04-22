@@ -180,6 +180,7 @@ const MallController = {
         } catch (error) {            
             res.status(500);
         }
+        res.end();
     }
 }
 
