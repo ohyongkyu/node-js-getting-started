@@ -162,10 +162,11 @@ const MallController = {
 
     },
 
-    webhook: (req, res, next) => {
-        console.log('query', req.query);
-        console.log('body', req.body);
+    webhook: async (req, res, next) => {
+        const params = req.body;
+        const validateResult = await Joi.validate(params, validateSchema.webhook);
 
+        console.log(validateResult);
         res.send('webhook');
     }
 }
