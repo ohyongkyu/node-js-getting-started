@@ -3,6 +3,7 @@ const querystring = require('querystring');
 const validateSchema = require('../define/validateSchema');
 const Mall = require('../models/mall.models');
 const Token = require('../models/token.models');
+const libOAuth = require('../lib/libOAuth');
 const { credentials, permissions } = require('../define/appInfo');
 
 const MallController = {
@@ -129,8 +130,9 @@ const MallController = {
                 mall_id: params['mall_id']
             },
             {
-                country_code: params['country_code'],
-                status: 'using'
+                country_code: params['country_code'],                
+                status: 'using',
+                created_at: Date.now
             }, {
                 new: true,
                 upsert: true
