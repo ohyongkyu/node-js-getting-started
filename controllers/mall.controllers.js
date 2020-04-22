@@ -132,7 +132,7 @@ const MallController = {
             {
                 country_code: params['country_code'],                
                 status: 'using',
-                created_at: Date.now
+                created_at: Date.now()
             }, {
                 new: true,
                 upsert: true
