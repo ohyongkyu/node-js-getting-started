@@ -14,3 +14,5 @@ db.once('open', () => {
 db.on('error', (err) => {
     console.log(`Error on DB Connection : ${err}`);
 });
+
+module.exports = mongoose;
