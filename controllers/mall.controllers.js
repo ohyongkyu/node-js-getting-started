@@ -102,10 +102,30 @@ const MallController = {
             return;
         }
 
+        
         const accessToken = await MallController.getAccessToken(mallId);
-        await libApi.setScriptTags(mallId, accessToken);
+        await libApi.setScriptTags(mallId, accessToken, {
+            request: {
+                src: 'https://evergreen33.cafe24.com/store/product.js',
+                display_location: [
+                    'PRODUCT_DETAIL',
+                    'PRODUCT_LIST'
+                ]
+            }
+        });
 
-        res.render('pages/main', params);        
+        await libApi.setScriptTags(mallId, accessToken, {
+            request: {
+                src: 'https://evergreen33.cafe24.com/store/board.js',
+                display_location: [
+                    'BOARD_MAIN',
+                    'BOARD_FREE_LIST',
+                    'BOARD_FREE_DETAIL'
+                ]
+            }
+        });
+        
+        res.render('pages/main', params);
     },
 
     authcode: async(req, res, next) => {
