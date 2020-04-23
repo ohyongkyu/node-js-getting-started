@@ -3,30 +3,47 @@ const querystring = require('querystring');
 const validateSchema = require('../define/validateSchema');
 const Mall = require('../models/mall.models');
 const Token = require('../models/token.models');
+const libApi = require('../lib/libApi');
 const libOAuth = require('../lib/libOAuth');
 const { credentials, permissions } = require('../define/appInfo');
 
 const MallController = {
-    isValidHmac: (params) => {        
-        // Spread
-        let authdata = { ...params };
-        delete authdata['hmac'];
+    isValidHmac: async (req, res, next) => {
+        try {
+            const params = req.query;
+
+            if (process.env.NODE_ENV == 'development') {
+                return next();                
+            }
+            const validateResult = await Joi.validate(params, validateSchema.main);        
     
-        if (params.hasOwnProperty('is_multi_shop') === true) {
-            authdata['is_multi_shop'] = params['is_multi_shop'];
-        }
-    
-        if (['A', 'S'].includes(params.user_type) === true) {
-            authdata['auth_config'] = params['auth_config'];
-        }
-        // sort
-        authdata = Object.fromEntries(Object.entries(authdata).sort());
-    
-        const crypto = require('crypto');
-        const hmac = crypto.createHmac('sha256', credentials['client_secret']);    
-        const signed = hmac.update(Buffer.from(querystring.stringify(authdata), 'utf-8')).digest('base64');
+            // Spread
+            let authdata = { ...params };
+            delete authdata['hmac'];
+        
+            if (params.hasOwnProperty('is_multi_shop') === true) {
+                authdata['is_multi_shop'] = params['is_multi_shop'];
+            }
+        
+            if (['A', 'S'].includes(params.user_type) === true) {
+                authdata['auth_config'] = params['auth_config'];
+            }
+            // sort
+            authdata = Object.fromEntries(Object.entries(authdata).sort());
+        
+            const crypto = require('crypto');
+            const hmac = crypto.createHmac('sha256', credentials['client_secret']);    
+            const signed = hmac.update(Buffer.from(querystring.stringify(authdata), 'utf-8')).digest('base64');
             
-        return (params['hmac'] === signed);
+            if (params['hmac'] !== signed) {
+                res.send('Invalid hmac');
+                return;
+            }
+            next();
+        } catch (error) {            
+            res.send('Invalid hmac');
+            return false;
+        }
     },
 
     isInstalled: async (mallId) => {
@@ -67,20 +84,6 @@ const MallController = {
         const params = req.query;
         const mallId = params['mall_id'];
         const countryCode = params['nation'];
-    
-        if (process.env.NODE_ENV === 'production') {
-            const validateResult = await Joi.validate(params, validateSchema.main);
-    
-            if (validateResult.error != null) {
-                res.send('Missing required value');
-                return;
-            }
-            if (MallController.isValidHmac(params) === false) {
-                res.send('Invalid hmac');
-                return;
-            }
-        }
-
         const isInstalled = await MallController.isInstalled(mallId);
         const isValidAccessToken = await MallController.isValidAccessToken(mallId);
 
@@ -99,32 +102,30 @@ const MallController = {
             return;
         }
 
-        res.render('pages/main', params);
+        const accessToken = await MallController.getAccessToken(mallId);
+        await libApi.setScriptTags(mallId, accessToken);
+
+        res.render('pages/main', params);        
     },
 
     authcode: async(req, res, next) => {
-        let params = req.query;
-
-        if (params.hasOwnProperty('error') === true) {
-            res.send(params.error);
-            return;
-        }
-
-        const validateResult = await Joi.validate(params, validateSchema.authcode);
-    
-        if (validateResult.error != null) {
-            console.error(validateResult.error);
-            res.send('Missing required value');
-            return;
-        }
-        const state = querystring.parse(Buffer.from(params['state'], 'base64').toString('utf-8'));
-        params = Object.assign(params, state);
-
-        const response = await libOAuth.requestAccessToken(params['mall_id'], params['code']);
-        const filter = {mall_id: params['mall_id']};
-        const accessToken = response.data;
-
         try {
+            let params = req.query;
+
+            if (params.hasOwnProperty('error') === true) {
+                res.send(params.error);
+                return;
+            }
+    
+            const validateResult = await Joi.validate(params, validateSchema.authcode);
+
+            const state = querystring.parse(Buffer.from(params['state'], 'base64').toString('utf-8'));
+            params = Object.assign(params, state);
+    
+            const response = await libOAuth.requestAccessToken(params['mall_id'], params['code']);
+            const filter = {mall_id: params['mall_id']};
+            const accessToken = response.data;
+            
             const isInstalled = await MallController.isInstalled(params['mall_id']);
             if (isInstalled === false) {
                 await new Mall({
@@ -134,16 +135,13 @@ const MallController = {
                 }).save();
             } else {
                 // App 정보 갱신
-                await Mall.updateOne(
-                    {
-                        mall_id: params['mall_id']
-                    }, 
-                    {
-                        country_code: params['country_code'], 
-                        status: 'using', 
-                        updated_at: Date.now()
-                    }
-                );
+                await Mall.updateOne({
+                    mall_id: params['mall_id']
+                }, {
+                    country_code: params['country_code'], 
+                    status: 'using', 
+                    updated_at: Date.now()
+                });
             }
             // 토큰 갱신
             await Token.findOneAndUpdate(
@@ -151,15 +149,13 @@ const MallController = {
                 accessToken,
                 {new: true, upsert: true}
             );
-
+    
             res.render('pages/main', params);
         } catch (error) {
+            console.error(error);
             res.send(error);
+            return;
         }
-    },
-
-    admin: (req, res, next) => {
-
     },
 
     webhook: async (req, res, next) => {
@@ -181,7 +177,37 @@ const MallController = {
             res.status(500);
         }
         res.end();
-    }
+    },
+
+    getAccessToken: async (mallId) => {
+        try {
+            let accessToken = await Token.findOne({mall_id: mallId}).exec();
+
+            if (accessToken == null) {                
+                return null;
+            }
+
+            const currentDate = new Date();           
+            if (currentDate < accessToken['expires_at']) {
+                return accessToken['access_token'];
+            }
+            const response = await libOAuth.refreshAccessToken(mallId, accessToken['refresh_token']);
+            const validateResult = await Joi.validate(response.data, validateSchema.accessToken);
+
+            accessToken = response.data;
+
+            // 토큰 갱신
+            await Token.findOneAndUpdate(
+                {mall_id: mallId},
+                accessToken,
+                {new: true, upsert: true}
+            );
+            return accessToken['access_token'];
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }    
 }
 
 module.exports = MallController;

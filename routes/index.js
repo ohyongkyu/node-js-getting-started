@@ -7,8 +7,7 @@ router.get('/', (req, res) => {
     res.render('pages/index')
 });
 
-router.get('/admin', mallController.admin);
-router.get('/main', mallController.main);
+router.get('/main', mallController.isValidHmac, mallController.main);
 router.get('/authcode', mallController.authcode);
 router.post('/webhook', mallController.webhook);
 

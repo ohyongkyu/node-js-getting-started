@@ -31,6 +31,18 @@ const validateSchema = {
         }),
         version: Joi.string().required(),
         issue_datetime: Joi.any().required()
+    },
+
+    accessToken: {
+        access_token: Joi.string().alphanum().required(),
+        expires_at: Joi.date().required(),
+        refresh_token: Joi.string().alphanum().required(),
+        refresh_token_expires_at: Joi.date().required(),
+        client_id: Joi.string().alphanum().required(),
+        mall_id: Joi.string().alphanum().min(4).max(16).required(),
+        user_id: Joi.string().alphanum().min(4).max(20).required(),
+        scopes: Joi.array().required(),
+        issued_at: Joi.date().required()
     }
 };
 
