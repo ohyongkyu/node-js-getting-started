@@ -103,7 +103,7 @@ const MallController = {
         }
 
         
-        const accessToken = await MallController.getAccessToken(mallId);
+        const accessToken = await MallController.getAccessToken(mallId);        
         await libApi.setScriptTags(mallId, accessToken, {
             request: {
                 src: 'https://evergreen33.cafe24.com/store/product.js',
@@ -123,8 +123,7 @@ const MallController = {
                     'BOARD_FREE_DETAIL'
                 ]
             }
-        });
-        
+        });        
         res.render('pages/main', params);
     },
 

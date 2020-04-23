@@ -4,7 +4,17 @@
 <title>단밤</title>
 </head>
 <body>
-<h3> 몰아이디 : <%= mall_id %> <h3>
-    
+<h3> mall_id : <%= mall_id %> <h3>
+<h3> user_id : <%= user_id %></h3>    
+<% if (typeof user_name !== 'undefined') { %><h3> user_name : <%= user_name %> </h3><% } %>
+<% if (typeof user_type !== 'undefined') { %><h3> user_type : <%= user_type %> </h3><% } %>
+<% if (typeof shop_no !== 'undefined') { %><h3> shop_no : <%= shop_no %> </h3><% } %>
+<% if (typeof lang !== 'undefined') { %><h3> lang : <%= lang %> </h3><% } %>
+<% if (typeof nation !== 'undefined') { %><h3> nation : <%= nation %> </h3><% } %>
+<% if (typeof timestamp !== 'undefined') { %><h3> timestamp : <%= timestamp %> </h3><% } %>
+<% if (typeof hmac !== 'undefined') { %><h3> hmac : <%= hmac %> </h3><% } %>
+<% if (typeof is_multi_shop !== 'undefined') { %><h3> is_multi_shop : <%= is_multi_shop %> </h3><% } %>
+<% if (typeof auth_config !== 'undefined') { %><h3> auth_config : <%= JSON.stringify(auth_config) %> </h3><% } %>
+
 </body>
 </html>
