@@ -149,7 +149,7 @@ const MallController = {
             if (isInstalled === false) {
                 await new Mall({
                     mall_id: params['mall_id'],
-                    country_code: params['country_code'],
+                    country_code: params['nation'],
                     status: 'using'
                 }).save();
             } else {
@@ -157,7 +157,7 @@ const MallController = {
                 await Mall.updateOne({
                     mall_id: params['mall_id']
                 }, {
-                    country_code: params['country_code'], 
+                    country_code: params['nation'], 
                     status: 'using', 
                     updated_at: Date.now()
                 });
