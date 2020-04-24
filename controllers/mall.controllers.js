@@ -45,6 +45,7 @@ const MallController = {
             }
             next();
         } catch (error) {            
+            console.log(error);
             res.send('Invalid hmac');
             return false;
         }
