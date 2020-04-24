@@ -11,6 +11,7 @@ const MallController = {
     isValidHmac: async (req, res, next) => {
         try {
             const params = req.query;
+            console.log(params);
 
             if (process.env.NODE_ENV == 'development') {
                 return next();                
