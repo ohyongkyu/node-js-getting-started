@@ -4,7 +4,7 @@ const validateSchema = {
     main: {
         mall_id: Joi.string().alphanum().min(4).max(16).required(),
         user_id: Joi.string().alphanum().min(4).max(20).required(),
-        user_name: Joi.string().min(4).max(20).required(),
+        user_name: Joi.string().min(1).max(20).required(),
         user_type: Joi.string().valid("A", "S", "P").required(),
         shop_no: Joi.number().required(),
         lang: Joi.string().regex(/^[a-z]{2}_[A-Z]{2}$/).required(),
