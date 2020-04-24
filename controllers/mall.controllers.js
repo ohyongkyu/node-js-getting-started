@@ -25,7 +25,7 @@ const MallController = {
                 authdata['is_multi_shop'] = params['is_multi_shop'];
             }
         
-            if (['A', 'S'].includes(params.user_type) === true) {
+            if (['A', 'S'].includes(params['user_type']) === true) {
                 authdata['auth_config'] = params['auth_config'];
             }
             // sort
@@ -36,6 +36,9 @@ const MallController = {
             const signed = hmac.update(Buffer.from(querystring.stringify(authdata), 'utf-8')).digest('base64');
             
             if (params['hmac'] !== signed) {
+                console.log(params);
+                console.log(params['hmac']);
+                console.log(signed);
                 res.send('Invalid hmac');
                 return;
             }
